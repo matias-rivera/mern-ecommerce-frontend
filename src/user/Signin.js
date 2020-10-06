@@ -1,18 +1,22 @@
 import React, {useState} from 'react';
 import Layout from './../core/Layout';
 import { Redirect } from 'react-router-dom';
-import { signin, authenticate } from '../auth';
+import { signin, authenticate, isAuthenticated } from '../auth';
+
+
+
 
 const Signin = () => {
     const [values, setValues] = useState({
-        email: '',
-        password: '',
+        email: 'jmrivera1100@gmail.com',
+        password: 'matias123',
         error: '',
         loading: false,
         redirectToReferrer: false
     });
 
     const {email, password, error, loading, redirectToReferrer} = values;
+    const {user} = isAuthenticated();
 
     //handle changes on values
     const handleChange = name => event => {
@@ -85,8 +89,18 @@ const Signin = () => {
     
     //after sign in redirect to home
     const redirectUser = () => {
+        //check for role to redirect to dashboard
         if(redirectToReferrer){
-            return <Redirect to ="/" />
+            if(user && user.role === 1){
+                return <Redirect to ="/admin/dashboard" />;
+            }
+            else{
+                return <Redirect to ="/user/dashboard" />;
+            }
+        }
+        //if user is already authenticated, redirect to home
+        if(isAuthenticated()) {
+            return <Redirect to="/" />;
         }
     }
 
