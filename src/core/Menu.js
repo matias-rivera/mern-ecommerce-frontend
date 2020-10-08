@@ -19,11 +19,11 @@ const Menu = ({history}) => (
     <div>
         <ul className="nav nav-tabs bg-primary">
             <li className="nav-item">
-                <Link className="nav-link" style={isActive(history,'/')} to="/shop">Shop</Link>
+                <Link className="nav-link" style={isActive(history,'/shop')} to="/shop">Shop</Link>
             </li>
 
             <li className="nav-item">
-                <Link className="nav-link" style={isActive(history,'/shop')} to="/">Home</Link>
+                <Link className="nav-link" style={isActive(history,'/')} to="/">Home</Link>
             </li>
            
            {isAuthenticated() && isAuthenticated().user.role === 0 && (
