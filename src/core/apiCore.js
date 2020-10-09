@@ -47,10 +47,34 @@ export const getFilteredProducts = (skip, limit, filters = {}) => {
     ;
 };
 
-//
+//get the list of products searched by name
 export const list = params => {
     const query = queryString.stringify(params);
     return fetch(`${API}/products/search?${query}`,{
+        method: "GET"
+
+    })
+        .then(response => {
+            return response.json()
+        })
+        .catch(err => console.log(err))
+};
+
+// use ID to get product, used on product page
+export const read = (productId) => {
+    return fetch(`${API}/product/${productId}`,{
+        method: "GET"
+
+    })
+        .then(response => {
+            return response.json()
+        })
+        .catch(err => console.log(err))
+};
+
+// get related products
+export const listRelated = (productId) => {
+    return fetch(`${API}/products/related/${productId}`,{
         method: "GET"
 
     })
