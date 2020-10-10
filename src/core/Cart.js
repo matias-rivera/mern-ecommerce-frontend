@@ -59,7 +59,7 @@ const Cart = () => {
                         Your cart summary
                     </h2>
                     <hr/>
-                    <Checkout products={items}/>
+                    <Checkout products={items} setRun={setRun} run={run} />
             </div>
         </div>
 
