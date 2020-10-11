@@ -41,7 +41,7 @@ export const createProduct = (userId, token, product) => {
         });
 };
 
-
+//get all categories
 export const getCategories = () => {
     return fetch(`${API}/categories`,{
         method: "GET"
@@ -52,3 +52,57 @@ export const getCategories = () => {
         })
         .catch(err => console.log)
 }
+
+// get all orders
+export const listOrders = (userId, token) => {
+    return fetch(`${API}/order/list/${userId}`,{
+        method: "GET",
+        headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${token}`
+        }
+
+    })
+        .then(response => {
+            return response.json()
+        })
+        .catch(err => console.log)
+}
+
+
+//get all status values
+export const getStatusValues = (userId, token) => {
+    return fetch(`${API}/order/status-values/${userId}`,{
+        method: "GET",
+        headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${token}`
+        }
+
+    })
+        .then(response => {
+            return response.json()
+        })
+        .catch(err => console.log)
+}
+
+//update order status
+export const updateOrderStatus = (userId, token, orderId, status) => {
+    
+    return fetch(`${API}/order/${orderId}/status/${userId}`,{
+        method: "PUT",
+        headers: {
+            Accept: 'application/json',
+            "Content-type" : 'application/json',
+            Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({status, orderId})
+
+
+    })
+        .then(response => {
+            return response.json()
+        })
+        .catch(err => console.log)
+}
+
