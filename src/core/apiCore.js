@@ -101,7 +101,7 @@ export const getBraintreeClientToken = (userId, token) => {
         .catch(err => console.log(err))
 };
 
-
+//send the payment to server, it need the user auth id, token and the payment data
 export const processPayment = (userId, token, paymentData) => {
     return fetch(`${API}/braintree/payment/${userId}`,{
         method: "POST",
@@ -111,6 +111,24 @@ export const processPayment = (userId, token, paymentData) => {
             Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(paymentData)
+
+    })
+        .then(response => {
+            return response.json();
+        })
+        .catch(err => console.log(err))
+};
+
+//send order data to database, it need the user auth id, token and order data
+export const createOrder = (userId, token, createOrderData) => {
+    return fetch(`${API}/order/create/${userId}`,{
+        method: "POST",
+        headers: {
+            Accept: 'application/json',
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({order: createOrderData})
 
     })
         .then(response => {

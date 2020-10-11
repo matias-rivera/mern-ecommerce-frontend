@@ -1,6 +1,6 @@
 import React,{useState, useEffect} from 'react';
 import Layout from './Layout';
-import {getProducts, getBraintreeClientToken, processPayment} from './apiCore';
+import {getProducts, getBraintreeClientToken, processPayment, createOrder} from './apiCore';
 import Card from './Card';
 import DropIn from 'braintree-web-drop-in-react';
 import { isAuthenticated } from './../auth/index';
@@ -56,6 +56,9 @@ const Checkout = ({products, setRun = f => f, run = undefined}) => {
                 );
     };
 
+    //address
+    let deliveryAddress = data.address;
+
     const buy = () => {
         //send the payment method to server
         setData({ loading: true});
@@ -73,34 +76,53 @@ const Checkout = ({products, setRun = f => f, run = undefined}) => {
                     amount: getTotal(products)
                 }
 
+                //call to API to process payment
                 processPayment(userId, token, paymentData)
                     .then(response => {
-                        //console.log(response)
-                        setData({...data, success: response.success});
-                        emptyCart(() => {
-                            setRun(!run); // run useEffect in parent Cart
-                            console.log('payment success and empty cart');
-                            setData({
-                                loading: false,
-                                success: true
-                        });
-                        }) ; 
-                        //empty cart
+                        //create order structure
+                        const createOrderData = {
+                            products: products,
+                            transaction_id: response.transaction.id,
+                            amount: response.transaction.amount,
+                            address: deliveryAddress
+                        }
 
-                        //create order
-                    })
+                        //call to API to create order
+                        createOrder(userId, token, createOrderData)
+                            .then(response => {
+                                //empty cart
+                                emptyCart(() => {
+                                    setRun(!run); // run useEffect in parent Cart
+                                    console.log('payment success and empty cart');
+                                    setData({
+                                        loading: false,
+                                        success: true
+                                });
+                                
+                            })
+                   
+                        }) 
                     .catch(error => {
                         //console.log(error)
+                        setData({loading: false})
                         
-                    })
+                    });
             })
             .catch(error => {
                 //console.log('dropin error: ',error);
-                setData({ loading: true});
-            })
+                setData({ loading: false});
+            });
+        }) .catch(error => {
+            // console.log("dropin error: ", error);
+            setData({ ...data, error: error.message });
+        });
+
     }
 
-
+    //set address on state
+    const handleAddress = event => {
+        setData({...data, address: event.target.value})
+    }
 
     //show braintree ui
     const showDropIn = () => (
@@ -108,6 +130,17 @@ const Checkout = ({products, setRun = f => f, run = undefined}) => {
             {data.clientToken !== null 
             && products.length > 0
             ? (<div>
+            {/* Delivery input */}
+            <div className="gorm-group mb-3">
+                <label className="text-muted">Delivery address:</label>
+                <textarea
+                    onChange={handleAddress}
+                    className="form-control"
+                    value={data.address}
+                    placeholder="Type your delivery address here..."
+                />
+            </div>
+           {/* Braintree component */}
             <DropIn 
                 options={{
                     authorization: data.clientToken,
